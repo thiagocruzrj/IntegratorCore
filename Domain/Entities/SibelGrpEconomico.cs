@@ -1,6 +1,6 @@
 using System;
 
-namespace IntegratorNetCore.Domain.Entities {
+namespace IntegratorNet.Domain.Entities {
     public class SibelGrpEconomico {
         public SibelGrpEconomico (long id, string evento, DateTime dtEvento, string cdGrpEconomico, string nmGrpEconimico, string razaoSocial, string tipoDocumento, string numDocumento, string nmWebsite, string cdAtuacaoMarca, string atendimentoLoja, string atendimentoMall, string atendimentoMidia, string kaRespLoja, string kaRespMallMidia, string dtInsert, string dtUpdate) {
             this.Id = id;

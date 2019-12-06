@@ -1,6 +1,6 @@
 using System;
 
-namespace IntegratorNetCore.Domain.Entities {
+namespace IntegratorNet.Domain.Entities {
     public class SibelMarcas {
         public SibelMarcas (long id, string evento, DateTime dtEvento, string cdMarca, string nmMarca, string razaoSocial, string cdGrupoEconomico, string tipoDocumento, string numDocumento, string nnWwebsite, string cdAtuacaoMarca, string cdPerfilSocial, string cdSegmentoAbrasce, string cdCategoriaAbrasce, string flgAntena, string flgCaixaEletronico, string flgMedia, string flgQuiosque, string flgLoja, string flgEvento, string vlFaixaMetragemDe, string vlFaixaMetragemAte, string vlMetragemMinimaEvento, string vlMetragemMinimaQuiosque, string atendimentoLoja, string atendimentoMall, string atendimentoMidia, string kaRespLoja, string kaRespMallMidia, string dtInsert, string dtUpdate) {
             this.Id = id;

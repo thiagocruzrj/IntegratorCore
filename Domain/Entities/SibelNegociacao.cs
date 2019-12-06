@@ -1,6 +1,6 @@
 using System;
 
-namespace IntegratorNetCore.Domain.Entities {
+namespace IntegratorNet.Domain.Entities {
     public class SibelNegociacao {
         public SibelNegociacao (long id, string evento, DateTime dtEvento, string negociacao, string negociacaoPn, string negociacaoAssoc, string negociacaoCertificada, string marca, string cliente, string shopping, string tipoOportunidade, string estagio, string receitaTotal, string dtEmissao, string tipoPagamento, string aluguelTotal, string energiaTotal, string wishlist, string statusFaturamento, string vlDesconto, string dtIniVigencia, string dtFimVigencia, string categoriaMidia, string ramo, string categoria, string dtVencimento, string dtAssinatura, string motivoReprov, string motivoReprovDoc, string motivoPerde, string dtInsert, string dtUpdate, string dsTpAcaoJuridica) {
             this.Id = id;

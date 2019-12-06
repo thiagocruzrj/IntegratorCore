@@ -1,6 +1,6 @@
 using System;
 
-namespace IntegratorNetCore.Domain.Entities {
+namespace IntegratorNet.Domain.Entities {
     public class SibelSegmtoAbrasce {
         public SibelSegmtoAbrasce (long id, string evento, DateTime dtEvento, string cdSegmtoAbrasce, string nmSegmtoAbrasce) {
             this.Id = id;
