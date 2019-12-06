@@ -23,17 +23,18 @@ namespace IntegratorNet.Infrastructure.Repository
             try
             {
                 var dyParam = new OracleDynamicParameters();
-                dyParam.Add("EMPCURSOR", OracleDbType.RefCursor, ParameterDirection.Output);
 
                 var conn = this.GetConnection();
                 if(conn.State == ConnectionState.Closed) conn.Open();
 
                 if(conn.State == ConnectionState.Open) {
-                    var query = "sp";
+                    var query = "SELECT CD_CLIENTE,TIPO_CLIENTE,NM_RAZAO_SOCIAL,CD_GRUPO_ECONOMICO,CD_TIPO_DOCUMENTO,TIPO_AGENCIA," + 
+                                "FLG_BV,FLG_COMISSAO,FLG_ATND_MIDIA,DT_INSERT,DT_UPDATE,DS_SUBTIPO_CLIENTE,CD_DDD,NM_BAIRRO," +
+                                "NM_CIDADE,SG_ESTADO,NM_PAIS,CD_CEP FROM BI_STG.STG_CRM_CLIENTE";
                     result = SqlMapper.Query(conn,query,param: dyParam, commandType:CommandType.StoredProcedure);
                 }
             }
-            catch (Exception ex){
+            catch (Exception){
                 throw;
             } 
             
