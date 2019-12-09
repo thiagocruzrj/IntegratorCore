@@ -1,19 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using IntegratorNet.Domain.Repository;
-using IntegratorNet.Infrastructure.Repository;
+﻿using IntegratorNet.Infrastructure.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Oracle.ManagedDataAccess.Client;
 
 namespace IntegratorNet
 {
@@ -30,13 +20,7 @@ namespace IntegratorNet
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IConfiguration>(Configuration);
-            services.AddTransient<ISibelCategoriaAbrasce, SibelCategoriaAbrasceImpl>();
-            services.AddTransient<ISibelCliente, SibelClienteImpl>();
-            services.AddTransient<ISibelGrpEconomico, SibelGrpEconomicoImpl>();
-            services.AddTransient<ISibelMarcas, SibelMarcasImpl>();
-            services.AddTransient<ISibelNegociacao, SibelNegociacaoImpl>();
-            services.AddTransient<ISibelPropriedade, SibelPropriedadeImpl>();
-            services.AddTransient<ISibelSegmtoAbrasce, SibelSegmtoAbrasceImpl>();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 

@@ -39,7 +39,7 @@ namespace IntegratorNet.Domain.Entities
         public string CdTipoDocumento { get; private set; }
         public string TipoAgencia { get; private set; }
         public string FlgBv { get; private set; }
-        public string FlgComissoa { get; private set; }
+        public string FlgComissao { get; private set; }
         public string FlgAtndMidia { get; private set; }
         public string DtInsert { get; private set; }
         public string DtUpdate { get; private set; }
