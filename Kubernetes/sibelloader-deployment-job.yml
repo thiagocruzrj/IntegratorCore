@@ -1,0 +1,17 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: ms-loader-sibel-crondeployment
+spec:
+  schedule: "0 3 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+           - name: ms-loader-sibel-container
+             image: brmallsk8s.azurecr.io/msintegracao/brmalls-ms-loader-sibel:v1
+             imagePullPolicy: Always
+          imagePullSecrets:
+           - name: livrodeouro
+          restartPolicy: OnFailure
