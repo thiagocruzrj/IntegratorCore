@@ -1,3 +1,4 @@
+using System.Data.Common;
 using System.Collections.Generic;
 using System.Data;
 using IntegratorCore.Domain.Repository;
@@ -46,10 +47,12 @@ namespace IntegratorCore.Infrastructure.Repository
             {
                 connection.Open();
                 string query = $"select ID, EVENTO, DT_EVENTO, cd_categoria_abrasce, nm_categoria_abrasce from BI_STG.STG_CRM_CATEGORIA_ABRASCE";
+                
                 using (OracleDataAdapter adapter = new OracleDataAdapter(query, connection))
                 {
                     adapter.Fill(table);
                 };
+                connection.Close();
             }
             return table;
         }
@@ -71,7 +74,6 @@ namespace IntegratorCore.Infrastructure.Repository
                         cmd.CommandText = $"INSERT INTO clog_crm_categoria_abrasce" + 
                         "(ID, EVENTO, DT_EVENTO, cd_categoria_abrasce, nm_categoria_abrasce)" + 
                         "VALUES (ID, EVENTO, DT_EVENTO, cd_categoria_abrasce, nm_categoria_abrasce) from BI_STG.STG_CRM_CATEGORIA_ABRASCE";
-
                         using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
                         {
                             adapter.UpdateBatchSize = 1000;
@@ -82,6 +84,7 @@ namespace IntegratorCore.Infrastructure.Repository
                                 tran.Commit();
                             }
                         };
+                        connection.Close();
                     }
                 }
             }

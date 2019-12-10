@@ -1,4 +1,6 @@
-﻿using IntegratorNet.Infrastructure.Repository;
+﻿using IntegratorCore.Domain.Repository;
+using IntegratorCore.Infrastructure.Repository;
+using IntegratorNet.Infrastructure.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +22,7 @@ namespace IntegratorNet
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IConfiguration>(Configuration);
+
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

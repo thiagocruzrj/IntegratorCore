@@ -50,6 +50,7 @@ namespace IntegratorNet.Infrastructure.Repository
                 {
                     adapter.Fill(table);
                 };
+                connection.Close();
             }
             return table;
         }
@@ -80,6 +81,7 @@ namespace IntegratorNet.Infrastructure.Repository
                                 tran.Commit();
                             }
                         };
+                        connection.Close();
                     }
                 }
             }

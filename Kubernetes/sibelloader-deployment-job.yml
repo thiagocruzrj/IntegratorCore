@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: ms-loader-sibel-crondeployment
 spec:
-  schedule: "0 3 * * *"
+  schedule: "*/1 * * * *"
   jobTemplate:
     spec:
       template:

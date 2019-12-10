@@ -19,6 +19,6 @@
 #### Comandos para subida do projeto no AKS
 
 ##### Comando para subida de deployment kubernetes
-###### kubectl create -f ./kubernetes/api-deployment.yml
+###### kubectl create -f ./kubernetes/sibelloader-deployment-job
 
 ------------------------------------------------------------------------------------------------
