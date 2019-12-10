@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Data;
-using Dapper;
 using IntegratorCore.Domain.Repository;
 using IntegratorNet.Domain.Entities;
-using IntegratorNet.Infrastructure.OracleConfigs;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 using Oracle.ManagedDataAccess.Client;
@@ -24,7 +21,7 @@ namespace IntegratorNet.Infrastructure.Repository
         {
             DataTable table = new DataTable();
             // Getting datatable layout from database
-            table = GetDataTableLayout("clog_crm_categoria_abrasce");
+            table = GetDataTableLayout("clog_crm_cliente");
 
             // Pupulate datatable
             foreach (SibelCliente link in generic)
@@ -53,7 +50,7 @@ namespace IntegratorNet.Infrastructure.Repository
                 row["CD_CEP"] = link.CdCep;
                 table.Rows.Add(row);
             }
-            BulkInsertMySQL(table, "clog_crm_categoria_abrasce");
+            BulkInsertMySQL(table, "clog_crm_cliente");
         }
 
         public DataTable GetDataTableLayout(string tableName)
@@ -64,7 +61,7 @@ namespace IntegratorNet.Infrastructure.Repository
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
                 connection.Open();
-                string query = $"SELECT CD_CLIENTE,TIPO_CLIENTE,NM_RAZAO_SOCIAL,CD_GRUPO_ECONOMICO,CD_TIPO_DOCUMENTO,TIPO_AGENCIA," + 
+                string query = $"SELECT ID, EVENTO, DT_EVENTO CD_CLIENTE,TIPO_CLIENTE,NM_RAZAO_SOCIAL,CD_GRUPO_ECONOMICO,CD_TIPO_DOCUMENTO,TIPO_AGENCIA," + 
                                 "FLG_BV,FLG_COMISSAO,FLG_ATND_MIDIA,DT_INSERT,DT_UPDATE,DS_SUBTIPO_CLIENTE,CD_DDD,NM_BAIRRO," +
                                 "NM_CIDADE,SG_ESTADO,NM_PAIS,CD_CEP FROM BI_STG.STG_CRM_CLIENTE";
                 using (OracleDataAdapter adapter = new OracleDataAdapter(query, connection))
@@ -89,9 +86,14 @@ namespace IntegratorNet.Infrastructure.Repository
                     {
                         cmd.Connection = connection;
                         cmd.Transaction = tran;
-                        cmd.CommandText = $"INSERT INTO clog_crm_cliente VALUES " + 
-                        "NM_CATEGORIA_ABRASCE = item.NmCategoriaAbrasce, " + 
-                        "WHERE CD_CATEGORIA_ABRASCE = item.CdCategoriaAbrasce from BI_STG.STG_CRM_CATEGORIA_ABRASCE";
+                        cmd.CommandText = $"INSERT INTO clog_crm_cliente " + 
+                            "(ID, EVENTO, DT_EVENTO, CD_CLIENTE,TIPO_CLIENTE,NM_RAZAO_SOCIAL,CD_GRUPO_ECONOMICO,CD_TIPO_DOCUMENTO,TIPO_AGENCIA," + 
+                            "FLG_BV,FLG_COMISSAO,FLG_ATND_MIDIA,DT_INSERT,DT_UPDATE,DS_SUBTIPO_CLIENTE,CD_DDD,NM_BAIRRO," +
+                            "NM_CIDADE,SG_ESTADO,NM_PAIS,CD_CEP FROM BI_STG.STG_CRM_CLIENTE)" + 
+                            "VALUES (ID, EVENTO, DT_EVENTO, CD_CLIENTE,TIPO_CLIENTE,NM_RAZAO_SOCIAL,CD_GRUPO_ECONOMICO,CD_TIPO_DOCUMENTO,TIPO_AGENCIA," + 
+                            "FLG_BV,FLG_COMISSAO,FLG_ATND_MIDIA,DT_INSERT,DT_UPDATE,DS_SUBTIPO_CLIENTE,CD_DDD,NM_BAIRRO," +
+                            "NM_CIDADE,SG_ESTADO,NM_PAIS,CD_CEP FROM BI_STG.STG_CRM_CLIENTE)" +
+                            "FROM BI_STG.STG_CRM_CLIENTE";
 
                         using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
                         {

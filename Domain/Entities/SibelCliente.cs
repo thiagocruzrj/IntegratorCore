@@ -4,7 +4,7 @@ namespace IntegratorNet.Domain.Entities
 {
     public class SibelCliente
     {
-        public SibelCliente(long id, string evento, DateTime dtEvento, string cdCliente, string tipoCliente, string nmRazaoSocial, string cdGrupoEconomico, string cdTipoDocumento, string tipoAgencia, string flgBv, string flgComissoa, string flgAtndMidia, string dtInsert, string dtUpdate, string dsSubtipoCliente, string cdDdd, string nmBairro, string nmCidade, string sgEstado, string nmPais, string cdCep)
+        public SibelCliente(long id, string evento, DateTime dtEvento, string cdCliente, string tipoCliente, string nmRazaoSocial, string cdGrupoEconomico, string cdTipoDocumento, string tipoAgencia, string flgBv, string flgComissao, string flgAtndMidia, string dtInsert, string dtUpdate, string dsSubtipoCliente, string cdDdd, string nmBairro, string nmCidade, string sgEstado, string nmPais, string cdCep)
         {
             Id = id;
             Evento = evento;
@@ -16,7 +16,7 @@ namespace IntegratorNet.Domain.Entities
             CdTipoDocumento = cdTipoDocumento;
             TipoAgencia = tipoAgencia;
             FlgBv = flgBv;
-            FlgComissoa = flgComissoa;
+            FlgComissao = flgComissao;
             FlgAtndMidia = flgAtndMidia;
             DtInsert = dtInsert;
             DtUpdate = dtUpdate;
