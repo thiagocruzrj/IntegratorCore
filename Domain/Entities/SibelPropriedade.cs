@@ -2,7 +2,7 @@ using System;
 
 namespace IntegratorNet.Domain.Entities {
     public class SibelPropriedade {
-        public SibelPropriedade (long id, string evento, DateTime dtEvento, string cdPropriedade, string tipoPropriedade, string origdCpiAssociada, string indStatus, string indSituacao, string indDisponibLocacao, string categoriaPropriedade, string indAlerta, string classificacaoAbc, string abl, string vlCrd, string tipoMaterial, string tipoEstrutura, string periodoVenda, string tipoVenda, string qtdComercializada, string dlUltUpdValores, string ultimoAluguelFatur, string ultimoAluguelPercent, string ultimoAluguelMinimo, string ultimoAluguelContrato, string ultimoCondominio, string ultimoFundoPromo, string ultimoAtividade, string ultimoLogista, string dtSaidaLogista, string anmTotalPrimeiroAnoViab, string anmTotalViab, string aluguelM2PrimeiroAnoViab, string primeiroNOmeViaB, string cduM2ViaB, string cduViaB, string numAlugueisAnoViaB, string condominioViaB, string vglViaB, string previsaoSegmtoViaB, string aluguelM2PrimeiroAnoTab, string aluguelPrimeiroAnoTab, string cduM2Tab, string cduTab, string vglTab, string setorLocalizacao, string pavimento_Localizacao, string cdCpiAssociada, string dt_Insert, string dt_Update, string ind_Reserva_Tecnica, string dtIniReforma, string dtFimReforma) {
+        public SibelPropriedade (long id, string evento, DateTime dtEvento, string cdPropriedade, string tipoPropriedade, string origdCpiAssociada, string indStatus, string indSituacao, string indDisponibLocacao, string categoriaPropriedade, string indAlerta, string classificacaoAbc, string abl, string vlCrd, string tipoMaterial, string tipoEstrutura, string periodoVenda, string tipoVenda, string qtdComercializada, string dlUltUpdValores, string ultimoAluguelFatur, string ultimoAluguelPercent, string ultimoAluguelMinimo, string ultimoAluguelContrato, string ultimoCondominio, string ultimoFundoPromo, string ultimoAtividade, string ultimoLogista, string dtSaidaLogista, string anmTotalPrimeiroAnoViab, string anmTotalViab, string aluguelM2PrimeiroAnoViab, string primeiroAnoViaB, string cduM2ViaB, string cduViaB, string numAlugueisAnoViaB, string condominioViaB, string vglViaB, string previsaoSegmtoViaB, string aluguelM2PrimeiroAnoTab, string aluguelPrimeiroAnoTab, string cduM2Tab, string cduTab, string vglTab, string setorLocalizacao, string pavimento_Localizacao, string cdCpiAssociada, string dt_Insert, string dt_Update, string ind_Reserva_Tecnica, string dtIniReforma, string dtFimReforma) {
             this.Id = id;
             this.Evento = evento;
             this.DtEvento = dtEvento;
@@ -35,7 +35,7 @@ namespace IntegratorNet.Domain.Entities {
             this.AnmTotalPrimeiroAnoViab = anmTotalPrimeiroAnoViab;
             this.AnmTotalViab = anmTotalViab;
             this.AluguelM2PrimeiroAnoViab = aluguelM2PrimeiroAnoViab;
-            this.PrimeiroNOmeViaB = primeiroNOmeViaB;
+            this.PrimeiroAnoViaB = primeiroAnoViaB;
             this.CduM2ViaB = cduM2ViaB;
             this.CduViaB = cduViaB;
             this.NumAlugueisAnoViaB = numAlugueisAnoViaB;
@@ -89,7 +89,7 @@ namespace IntegratorNet.Domain.Entities {
         public string AnmTotalPrimeiroAnoViab { get; private set; }
         public string AnmTotalViab { get; private set; }
         public string AluguelM2PrimeiroAnoViab { get; private set; }
-        public string PrimeiroNOmeViaB { get; private set; }
+        public string PrimeiroAnoViaB { get; private set; }
         public string CduM2ViaB { get; private set; }
         public string CduViaB { get; private set; }
         public string NumAlugueisAnoViaB { get; private set; }

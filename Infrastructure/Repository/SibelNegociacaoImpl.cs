@@ -30,8 +30,13 @@ namespace IntegratorNet.Infrastructure.Repository
                 row["ID"] = item.Id;
                 row["EVENTO"] = item.Evento;
                 row["DT_EVENTO"] = item.DtEvento;                
+                row["CD_NEGOCIACAO"] = item.Negociacao;                
+                row["CD_NEGOCIACAO_PN"] = item.NegociacaoPn;                
+                row["CD_NEGOCIACAO_ASSOC"] = item.NegociacaoAssoc;                
+                row["FL_NEGOCIACAO_CERTIFICADA"] = item.NegociacaoAssoc;                
+                row["CD_MARCA"] = item.DtEvento;                 
                 row["CD_CLIENTE"] = item.Cliente;
-                row["CD_SHOPPING"] = item.NmMarca;
+                row["CD_SHOPPING"] = item.Shopping;
                 row["TIPO_OPORTUNIDADE"] = item.TipoOportunidade;
                 row["ESTAGIO"] = item.Estagio;
                 row["RECEITA_TOTAL"] = item.ReceitaTotal;
@@ -68,10 +73,11 @@ namespace IntegratorNet.Infrastructure.Repository
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
                 connection.Open();
-                string query = $"SELECT ID, EVENTO, DT_EVENTO, CD_CLIENTE,CD_SHOPPING,TIPO_OPORTUNIDADE,ESTAGIO,RECEITA_TOTAL,DT_EMISSAO,TIPO_PAGAMENTO,ALUGUEL_TOTAL, " +
-                    "ENERGIA_TOTAL ,WISHLIST ,STATUS_FATURAMENTO ,VL_DESCONTO ,DT_INI_VIGENCIA ,DT_FIM_VIGENCIA,CATEGORIA_MIDIA, " +
-                    "RAMO,CATEGORIA,DT_VENCIMENTO,DT_ASSINATURA,MOTIVO_REPROV,MOTIVO_REPROV_DOC,MOTIVO_PERDA,DT_INSERT,DT_UPDATE, " +
-                    "DS_TP_ACAO_JURIDICA from BI_STG.STG_CRM_NEGOCIACAO";
+                string query = $"SELECT ID, EVENTO, DT_EVENTO, CD_NEGOCIACAO ,CD_NEGOCIACAO_PN ,CD_NEGOCIACAO_ASSOC, " +
+                "FL_NEGOCIACAO_CERTIFICADA,CD_MARCA,CD_CLIENTE,CD_SHOPPING,TIPO_OPORTUNIDADE,ESTAGIO,RECEITA_TOTAL, " +
+                "DT_EMISSAO,TIPO_PAGAMENTO,ALUGUEL_TOTAL,ENERGIA_TOTAL,WISHLIST,STATUS_FATURAMENTO,VL_DESCONTO,DT_INI_VIGENCIA, " +
+                "DT_FIM_VIGENCIA,CATEGORIA_MIDIA,RAMO,CATEGORIA,DT_VENCIMENTO,DT_ASSINATURA,MOTIVO_REPROV,MOTIVO_REPROV_DOC, " +
+                "MOTIVO_PERDA,DT_INSERT,DT_UPDATE,DS_TP_ACAO_JURIDICA from BI_STG.STG_CRM_NEGOCIACAO";
                 using (OracleDataAdapter adapter = new OracleDataAdapter(query, connection))
                 {
                     adapter.Fill(table);
@@ -95,14 +101,16 @@ namespace IntegratorNet.Infrastructure.Repository
                         cmd.Connection = connection;
                         cmd.Transaction = tran;
                         cmd.CommandText = $"INSERT INTO clog_crm_negociacao " + 
-                            "(ID, EVENTO, DT_EVENTO, CD_CLIENTE,CD_SHOPPING,TIPO_OPORTUNIDADE,ESTAGIO,RECEITA_TOTAL,DT_EMISSAO,TIPO_PAGAMENTO,ALUGUEL_TOTAL, " +
-                            "ENERGIA_TOTAL ,WISHLIST ,STATUS_FATURAMENTO ,VL_DESCONTO ,DT_INI_VIGENCIA ,DT_FIM_VIGENCIA,CATEGORIA_MIDIA, " +
-                            "RAMO,CATEGORIA,DT_VENCIMENTO,DT_ASSINATURA,MOTIVO_REPROV,MOTIVO_REPROV_DOC,MOTIVO_PERDA,DT_INSERT,DT_UPDATE, " +
-                            "DS_TP_ACAO_JURIDICA)" + 
-                            "VALUES (ID, EVENTO, DT_EVENTO, CD_CLIENTE,CD_SHOPPING,TIPO_OPORTUNIDADE,ESTAGIO,RECEITA_TOTAL,DT_EMISSAO,TIPO_PAGAMENTO,ALUGUEL_TOTAL, " +
-                            "ENERGIA_TOTAL ,WISHLIST ,STATUS_FATURAMENTO ,VL_DESCONTO ,DT_INI_VIGENCIA ,DT_FIM_VIGENCIA,CATEGORIA_MIDIA, " +
-                            "RAMO,CATEGORIA,DT_VENCIMENTO,DT_ASSINATURA,MOTIVO_REPROV,MOTIVO_REPROV_DOC,MOTIVO_PERDA,DT_INSERT,DT_UPDATE, " +
-                            "DS_TP_ACAO_JURIDICA) FROM BI_STG.STG_CRM_NEGOCIACAO";
+                            "(ID, EVENTO, DT_EVENTO, CD_NEGOCIACAO ,CD_NEGOCIACAO_PN ,CD_NEGOCIACAO_ASSOC, " +
+                            "FL_NEGOCIACAO_CERTIFICADA,CD_MARCA,CD_CLIENTE,CD_SHOPPING,TIPO_OPORTUNIDADE,ESTAGIO,RECEITA_TOTAL, " +
+                            "DT_EMISSAO,TIPO_PAGAMENTO,ALUGUEL_TOTAL,ENERGIA_TOTAL,WISHLIST,STATUS_FATURAMENTO,VL_DESCONTO,DT_INI_VIGENCIA, " +
+                            "DT_FIM_VIGENCIA,CATEGORIA_MIDIA,RAMO,CATEGORIA,DT_VENCIMENTO,DT_ASSINATURA,MOTIVO_REPROV,MOTIVO_REPROV_DOC, " +
+                            "MOTIVO_PERDA,DT_INSERT,DT_UPDATE,DS_TP_ACAO_JURIDICA )" + 
+                            "VALUES (ID, EVENTO, DT_EVENTO, CD_NEGOCIACAO ,CD_NEGOCIACAO_PN ,CD_NEGOCIACAO_ASSOC, " +
+                            "FL_NEGOCIACAO_CERTIFICADA,CD_MARCA,CD_CLIENTE,CD_SHOPPING,TIPO_OPORTUNIDADE,ESTAGIO,RECEITA_TOTAL, " +
+                            "DT_EMISSAO,TIPO_PAGAMENTO,ALUGUEL_TOTAL,ENERGIA_TOTAL,WISHLIST,STATUS_FATURAMENTO,VL_DESCONTO,DT_INI_VIGENCIA, " +
+                            "DT_FIM_VIGENCIA,CATEGORIA_MIDIA,RAMO,CATEGORIA,DT_VENCIMENTO,DT_ASSINATURA,MOTIVO_REPROV,MOTIVO_REPROV_DOC, " +
+                            "MOTIVO_PERDA,DT_INSERT,DT_UPDATE,DS_TP_ACAO_JURIDICA) FROM BI_STG.STG_CRM_NEGOCIACAO";
 
                         using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
                         {
