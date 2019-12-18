@@ -1,132 +1,145 @@
-using System;
 using System.Collections.Generic;
 using System.Data;
-using IntegratorCore.Domain.Repository;
-using IntegratorNet.Domain.Entities;
-using Microsoft.Extensions.Configuration;
+using IntegratorCore.Cmd.Domain.Repository;
+using IntegratorCore.Cmd.Domain.Entities;
 using MySql.Data.MySqlClient;
 using Oracle.ManagedDataAccess.Client;
+using System;
+using System.Linq;
 
-namespace IntegratorNet.Infrastructure.Repository
+namespace IntegratorCore.Cmd.Infrastructure.Repository
 {
-    public class SibelMarcasImpl : IGenerateData<SibelMarcas>
+    public class SibelMarcasImpl : IGenerateData<SibelMarcasOracle>
     {
-        IConfiguration _configuration;
-
-        public SibelMarcasImpl(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
-        public void GetResult(string sql, List<SibelMarcas> generic)
-        {
-            DataTable table = new DataTable();
-            table = GetDataTableLayout("clog_crm_marcas");
-
-            // Pupulate datatable
-            foreach (SibelMarcas item in generic)
-            {
-                DataRow row = table.NewRow();
-                row["ID"] = item.Id;
-                row["EVENTO"] = item.Evento;
-                row["DT_EVENTO"] = item.DtEvento;                
-                row["CD_MARCA"] = item.CdMarca;
-                row["NM_MARCA"] = item.NmMarca;
-                row["RAZAO_SOCIAL"] = item.RazaoSocial;
-                row["CD_GRUPO_ECONOMICO"] = item.CdGrupoEconomico;
-                row["TIPO_DOCUMENTO"] = item.TipoDocumento;
-                row["NM_WEBSITE"] = item.NnWwebsite;
-                row["CD_ATUACAO_MARCA"] = item.CdAtuacaoMarca;
-                row["CD_PERFIL_SOCIAL"] = item.AtendimentoLoja;
-                row["CD_SEGMTO_ABRASCE"] = item.AtendimentoMall;
-                row["CD_CATEGORIA_ABRASCE"] = item.AtendimentoMidia;
-                row["FLG_ANTENA"] = item.KaRespLoja;
-                row["FLG_CAIXA_ELETRONICO"] = item.KaRespMallMidia;
-                row["FLG_MIDIA"] = item.FlgMedia;
-                row["FLG_QUIOSQUE"] = item.FlgQuiosque;
-                row["FLG_LOJA"] = item.FlgLoja;
-                row["FLG_EVENTO"] = item.FlgEvento;
-                row["VL_FAIXA_METRAGEM_DE"] = item.VlFaixaMetragemDe;
-                row["VL_FAIXA_METRAGEM_ATE"] = item.VlFaixaMetragemAte;
-                row["VL_METRAGEM_MINIMA_EVENTO"] = item.VlMetragemMinimaEvento;
-                row["VL_METRAGEM_MINIMA_QUIOSQUE"] = item.VlMetragemMinimaQuiosque;
-                row["ATENDIMENTO_LOJA"] = item.AtendimentoLoja;
-                row["ATENDIMENTO_MALL"] = item.AtendimentoMall;
-                row["ATENDIMENTO_MIDIA"] = item.AtendimentoMidia;
-                row["KA_RESP_LOJA"] = item.KaRespLoja;
-                row["KA_RESP_MALL_MIDIA"] = item.KaRespMallMidia;
-                row["DT_INSERT"] = item.DtInsert;
-                row["DT_UPDATE"] = item.DtUpdate;
-                table.Rows.Add(row);
-            }
-            BulkInsertMySQL(table, "clog_crm_marcas");
-        }
-
-        public DataTable GetDataTableLayout(string tableName)
-        {
-            DataTable table = new DataTable();
-            var connectionString = @"jdbc:oracle:thin:bi_read/bi#brmalls#26@192.168.100.170:1521/BRMBIPRD";
-
-            using (OracleConnection connection = new OracleConnection(connectionString))
-            {
-                connection.Open();
-                string query = $"SELECT ID, EVENTO, DT_EVENTO, Negociacao CD_MARCA,NM_MARCA,RAZAO_SOCIAL,CD_GRUPO_ECONOMICO,TIPO_DOCUMENTO,NUM_DOCUMENTO, " +
+        private readonly string _connectionStringMySQL = @"Server=brmallsapi.mysql.database.azure.com; Database=federationsiebel;Uid=developer@brmallsapi;Password=integration$$22@!;";        
+        private readonly string _connectionStringOracle = @"Data Source=localhost:1521/BRMBIPRD;User Id =bi_read;Password=bi#brmalls#26;";    
+        private readonly string _dmlSelect = @"SELECT CD_MARCA,NM_MARCA,RAZAO_SOCIAL,CD_GRUPO_ECONOMICO,TIPO_DOCUMENTO,NUM_DOCUMENTO, " +
                                 "NM_WEBSITE,CD_ATUACAO_MARCA,CD_PERFIL_SOCIAL,CD_SEGMTO_ABRASCE,CD_CATEGORIA_ABRASCE, " +
                                 "FLG_ANTENA,FLG_CAIXA_ELETRONICO,FLG_MIDIA,FLG_QUIOSQUE,FLG_LOJA,FLG_EVENTO, " +
                                 "VL_FAIXA_METRAGEM_DE,VL_FAIXA_METRAGEM_ATE,VL_METRAGEM_MINIMA_EVENTO, " +
-                                ",VL_METRAGEM_MINIMA_QUIOSQUE,ATENDIMENTO_LOJA,ATENDIMENTO_MALL,ATENDIMENTO_MIDIA, " +
-                                ",KA_RESP_LOJA,KA_RESP_MALL_MIDIA,DT_INSERT,DT_UPDATE from BI_STG.STG_CRM_MARCAS";
-                using (OracleDataAdapter adapter = new OracleDataAdapter(query, connection))
+                                "VL_METRAGEM_MINIMA_QUIOSQUE,ATENDIMENTO_LOJA,ATENDIMENTO_MALL,ATENDIMENTO_MIDIA, " +
+                                "KA_RESP_LOJA,KA_RESP_MALL_MIDIA,DT_INSERT,DT_UPDATE from BI_STG.STG_CRM_MARCAS";
+        private readonly string _dmlInsert = @"INSERT INTO clog_crm_marcas " + 
+                            "(EVENTO, DT_EVENTO,CD_MARCA,NM_MARCA,RAZAO_SOCIAL,CD_GRUPO_ECONOMICO,TIPO_DOCUMENTO,NUM_DOCUMENTO, " +
+                            "NM_WEBSITE,CD_ATUACAO_MARCA,CD_PERFIL_SOCIAL,CD_SEGMTO_ABRASCE,CD_CATEGORIA_ABRASCE, " +
+                            "FLG_ANTENA,FLG_CAIXA_ELETRONICO,FLG_MIDIA,FLG_QUIOSQUE,FLG_LOJA,FLG_EVENTO, " +
+                            "VL_FAIXA_METRAGEM_DE,VL_FAIXA_METRAGEM_ATE,VL_METRAGEM_MINIMA_EVENTO, " +
+                            "VL_METRAGEM_MINIMA_QUIOSQUE,ATENDIMENTO_LOJA,ATENDIMENTO_MALL,ATENDIMENTO_MIDIA, " +
+                            "KA_RESP_LOJA,KA_RESP_MALL_MIDIA,DT_INSERT,DT_UPDATE)";
+
+        public void GetResult()
+        {
+            //TODO: Alterar ADO pelo Dapper hidratando uma Entidade
+            DataTable table = new DataTable();
+            using (OracleConnection connection = new OracleConnection(_connectionStringOracle))
+            {
+                connection.Open();                                
+                using (OracleDataAdapter adapter = new OracleDataAdapter(_dmlSelect, connection))
                 {
                     adapter.Fill(table);
                 };
                 connection.Close();
+            }                
+            // Getting datatable layout from database
+            IList<SibelMarcasOracle> _sibelMarcas = new List<SibelMarcasOracle>();
+            if (table != null && table.Rows.Count > 0)
+            {                                
+                for(int i = 0; i < table.Rows.Count; i++)
+                {
+                    var row = table.Rows[i];
+                    _sibelMarcas.Add(
+                        new SibelMarcasOracle(
+                            (string)row["CD_MARCA"].ToString(),
+                            (string)row["NM_MARCA"].ToString(),
+                            (string)row["RAZAO_SOCIAL"].ToString(),
+                            (string)row["CD_GRUPO_ECONOMICO"].ToString(),
+                            (string)row["TIPO_DOCUMENTO"].ToString(),
+                            (string)row["NUM_DOCUMENTO"].ToString(),
+                            (string)row["NM_WEBSITE"].ToString(),
+                            (string)row["CD_ATUACAO_MARCA"].ToString(),
+                            (string)row["CD_PERFIL_SOCIAL"].ToString(),
+                            (string)row["CD_SEGMTO_ABRASCE"].ToString(),
+                            (string)row["CD_CATEGORIA_ABRASCE"].ToString(),
+                            (string)row["FLG_ANTENA"].ToString(),
+                            (string)row["FLG_CAIXA_ELETRONICO"].ToString(),
+                            (string)row["FLG_MIDIA"].ToString(),
+                            (string)row["FLG_QUIOSQUE"].ToString(),
+                            (string)row["FLG_LOJA"].ToString(),
+                            (string)row["FLG_EVENTO"].ToString(),
+                            (string)row["VL_FAIXA_METRAGEM_DE"].ToString(),
+                            (string)row["VL_FAIXA_METRAGEM_ATE"].ToString(),
+                            (string)row["VL_METRAGEM_MINIMA_EVENTO"].ToString(),
+                            (string)row["VL_METRAGEM_MINIMA_QUIOSQUE"].ToString(),
+                            (string)row["ATENDIMENTO_LOJA"].ToString(),
+                            (string)row["ATENDIMENTO_MALL"].ToString(),
+                            (string)row["ATENDIMENTO_MIDIA"].ToString(),
+                            (string)row["KA_RESP_LOJA"].ToString(),
+                            (string)row["KA_RESP_MALL_MIDIA"].ToString(),
+                            (string)row["DT_INSERT"].ToString(),
+                            (string)row["DT_UPDATE"].ToString()
+                        )
+                    );                    
+                }
+                BulkInsertMySQL(_sibelMarcas);
             }
-            return table;
         }
 
-        public void BulkInsertMySQL(DataTable table, string tableName)
+        public void GetResult(string sql, List<SibelMarcasOracle> generic)
         {
-            var connectionString = @"Server=brmallsapi.mysql.database.azure.com; Database=federationsiebel;
-            Uid=myUsername; Integrated Security=True;";
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            throw new NotImplementedException();
+        }
+
+        private void BulkInsertMySQL(IList<SibelMarcasOracle> results)
+        { //TODO: Alterar o ADO pelo Dapper.
+          //TODO: Alterar para respeitar mesmo a quantidade de dados. Aqui ele está fazendo um por um.          
+            try
             {
-                connection.Open();
-
-                using (MySqlTransaction tran = connection.BeginTransaction(IsolationLevel.Serializable))
+                
+                if(results != null && results.Count > 0)
                 {
-                    using (MySqlCommand cmd = new MySqlCommand())
-                    {
-                        cmd.Connection = connection;
-                        cmd.Transaction = tran;
-                        cmd.CommandText = $"INSERT INTO clog_crm_cliente " + 
-                            "(ID, EVENTO, DT_EVENTO, CD_MARCA,NM_MARCA,RAZAO_SOCIAL,CD_GRUPO_ECONOMICO,TIPO_DOCUMENTO,NUM_DOCUMENTO, " +
-                            "NM_WEBSITE,CD_ATUACAO_MARCA,CD_PERFIL_SOCIAL,CD_SEGMTO_ABRASCE,CD_CATEGORIA_ABRASCE, " +
-                            "FLG_ANTENA,FLG_CAIXA_ELETRONICO,FLG_MIDIA,FLG_QUIOSQUE,FLG_LOJA,FLG_EVENTO, " +
-                            "VL_FAIXA_METRAGEM_DE,VL_FAIXA_METRAGEM_ATE,VL_METRAGEM_MINIMA_EVENTO, " +
-                            ",VL_METRAGEM_MINIMA_QUIOSQUE,ATENDIMENTO_LOJA,ATENDIMENTO_MALL,ATENDIMENTO_MIDIA, " +
-                            ",KA_RESP_LOJA,KA_RESP_MALL_MIDIA,DT_INSERT,DT_UPDATE)" + 
-                            "VALUES (ID, EVENTO, DT_EVENTO, CD_MARCA,NM_MARCA,RAZAO_SOCIAL,CD_GRUPO_ECONOMICO,TIPO_DOCUMENTO,NUM_DOCUMENTO, " +
-                            "NM_WEBSITE,CD_ATUACAO_MARCA,CD_PERFIL_SOCIAL,CD_SEGMTO_ABRASCE,CD_CATEGORIA_ABRASCE, " +
-                            "FLG_ANTENA,FLG_CAIXA_ELETRONICO,FLG_MIDIA,FLG_QUIOSQUE,FLG_LOJA,FLG_EVENTO, " +
-                            "VL_FAIXA_METRAGEM_DE,VL_FAIXA_METRAGEM_ATE,VL_METRAGEM_MINIMA_EVENTO, " +
-                            ",VL_METRAGEM_MINIMA_QUIOSQUE,ATENDIMENTO_LOJA,ATENDIMENTO_MALL,ATENDIMENTO_MIDIA, " +
-                            ",KA_RESP_LOJA,KA_RESP_MALL_MIDIA,DT_INSERT,DT_UPDATE from BI_STG.STG_CRM_MARCAS)";
+                    //Configura a Paginação
+                    int total = results.Count; //Pega o total de resultados na lista
+                    int pageSize = 1000; //Quantidade de registros que vamos processar                    
+                    int totalPages = total / pageSize; //Baseado no total e nos registros, qual o total de páginas para iterar
+                    using (MySqlConnection connection = new MySqlConnection(_connectionStringMySQL)) 
+                    {                    
+                        connection.Open();
 
-                        using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+                        //Pega a página de processamento atual e começa a iteração
+                        for(int page = 0; page <= totalPages; page++)
                         {
-                            adapter.UpdateBatchSize = 1000;
-                            using (MySqlCommandBuilder cb = new MySqlCommandBuilder(adapter))
+                            //Lista Paginada
+                            var paginatedResults = results
+                            .Skip(pageSize * (page))
+                            .Take(pageSize)
+                            .ToList(); 
+
+                            //Abre a Transação para a quantidade atual paginada
+                            using (MySqlTransaction tran = connection.BeginTransaction(IsolationLevel.Serializable))
                             {
-                                cb.SetAllValues = true;
-                                adapter.Update(table);
+                                //Executa a operação com o total de linhas desta página
+                                foreach(var linha in paginatedResults)
+                                {                                    
+                                    using (MySqlCommand cmd = new MySqlCommand())
+                                    {
+                                        cmd.Connection = connection;
+                                        cmd.Transaction = tran;
+                                        cmd.CommandText = _dmlInsert + "values " +
+                                        $" ('{"Insert"}','{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}','{linha.CdMarca}','{linha.NmMarca}','{linha.RazaoSocial}','{linha.CdGrupoEconomico}','{linha.TipoDocumento}','{linha.NumDocumento}','{linha.NnWwebsite}','{linha.CdAtuacaoMarca}','{linha.CdPerfilSocial}','{linha.CdSegmentoAbrasce}','{linha.CdCategoriaAbrasce}','{linha.FlgAntena}','{linha.FlgCaixaEletronico}','{linha.FlgMedia}','{linha.FlgQuiosque}','{linha.FlgLoja}','{linha.FlgEvento}','{linha.VlFaixaMetragemDe}','{linha.VlFaixaMetragemAte}','{linha.VlMetragemMinimaEvento}','{linha.VlMetragemMinimaQuiosque}','{linha.AtendimentoLoja}','{linha.AtendimentoMall}','{linha.AtendimentoMidia}','{linha.KaRespLoja}','{linha.KaRespMallMidia}','{linha.DtInsert}','{linha.DtUpdate}')";
+                                        cmd.ExecuteNonQuery();
+                                    }                                
+                                }                                
                                 tran.Commit();
-                            }
-                        };
-                        connection.Close();
-                    }
-                }
+                            }                                                    
+                        } 
+                        connection.Close();                   
+                    }                                                                           
+                }                             
             }
+            catch (Exception)
+            {                
+                throw;
+            }            
         }
     }
 }

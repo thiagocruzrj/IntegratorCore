@@ -1,115 +1,126 @@
 using System.Collections.Generic;
 using System.Data;
-using IntegratorCore.Domain.Repository;
-using IntegratorNet.Domain.Entities;
-using Microsoft.Extensions.Configuration;
+using IntegratorCore.Cmd.Domain.Repository;
+using IntegratorCore.Cmd.Domain.Entities;
 using MySql.Data.MySqlClient;
 using Oracle.ManagedDataAccess.Client;
+using System.Linq;
+using System;
 
 namespace IntegratorNet.Infrastructure.Repository
 {
-    public class SibelClienteImpl : IGenerateData<SibelCliente>
+    public class SibelClienteImpl : IGenerateData<SibelClienteOracle>
     {
-        IConfiguration _configuration;
-
-        public SibelClienteImpl(IConfiguration configuration)
+        private readonly string _connectionStringMySQL = @"Server=brmallsapi.mysql.database.azure.com; Database=federationsiebel;Uid=developer@brmallsapi;Password=integration$$22@!;";
+        private readonly string _connectionStringOracle = @"Data Source=localhost:1521/BRMBIPRD;User Id =bi_read;Password=bi#brmalls#26;";
+        
+        private readonly string _dmlSelect = @"SELECT CD_CLIENTE,TIPO_CLIENTE,NM_RAZAO_SOCIAL,CD_GRUPO_ECONOMICO,CD_TIPO_DOCUMENTO,TIPO_AGENCIA,FLG_BV,FLG_COMISSAO,FLG_ATND_MIDIA,DT_INSERT,DT_UPDATE,DS_SUBTIPO_CLIENTE,CD_DDD,NM_BAIRRO,NM_CIDADE,SG_ESTADO,NM_PAIS,CD_CEP FROM BI_STG.STG_CRM_CLIENTE";
+        private readonly string _dmlInsert = @"INSERT INTO clog_crm_cliente(EVENTO, DT_EVENTO,CD_CLIENTE,TIPO_CLIENTE,NM_RAZAO_SOCIAL,CD_GRUPO_ECONOMICO,CD_TIPO_DOCUMENTO,TIPO_AGENCIA,FLG_BV,FLG_COMISSAO,FLG_ATND_MIDIA,DT_INSERT,DT_UPDATE,DS_SUBTIPO_CLIENTE,CD_DDD,NM_BAIRRO,NM_CIDADE,SG_ESTADO,NM_PAIS,CD_CEP)";
+                
+        public void GetResult()
         {
-            _configuration = configuration;
-        }
-
-        public void GetResult(string sql, List<SibelCliente> generic)
-        {
+            //TODO: Alterar ADO pelo Dapper hidratando uma Entidade
             DataTable table = new DataTable();
-            // Getting datatable layout from database
-            table = GetDataTableLayout("clog_crm_cliente");
-
-            // Pupulate datatable
-            foreach (SibelCliente link in generic)
+            using (OracleConnection connection = new OracleConnection(_connectionStringOracle))
             {
-                DataRow row = table.NewRow();
-                row["ID"] = link.Id;
-                row["EVENTO"] = link.Evento;
-                row["DT_EVENTO"] = link.DtEvento;                
-                row["CD_CLIENTE"] = link.CdCliente;
-                row["TIPO_CLIENTE"] = link.TipoCliente;
-                row["NM_RAZAO_SOCIAL"] = link.NmRazaoSocial;
-                row["CD_GRUPO_ECONOMICO"] = link.CdGrupoEconomico;
-                row["CD_TIPO_DOCUMENTO"] = link.CdTipoDocumento;
-                row["TIPO_AGENCIA"] = link.TipoAgencia;
-                row["FLG_BV"] = link.FlgBv;
-                row["FLG_COMISSAO"] = link.FlgComissao;
-                row["FLG_ATND_MIDIA"] = link.FlgAtndMidia;
-                row["DT_INSERT"] = link.DtInsert;
-                row["DT_UPDATE"] = link.DtUpdate;
-                row["DS_SUBTIPO_CLIENTE"] = link.DsSubtipoCliente;
-                row["CD_DDD"] = link.CdDdd;
-                row["NM_BAIRRO"] = link.NmBairro;
-                row["NM_CIDADE"] = link.NmCidade;
-                row["SG_ESTADO"] = link.SgEstado;
-                row["NM_PAIS"] = link.NmPais;
-                row["CD_CEP"] = link.CdCep;
-                table.Rows.Add(row);
-            }
-            BulkInsertMySQL(table, "clog_crm_cliente");
-        }
-
-        public DataTable GetDataTableLayout(string tableName)
-        {
-            DataTable table = new DataTable();
-            var connectionString = @"jdbc:oracle:thin:bi_read/bi#brmalls#26@192.168.100.170:1521/BRMBIPRD";
-
-            using (OracleConnection connection = new OracleConnection(connectionString))
-            {
-                connection.Open();
-                string query = $"SELECT ID, EVENTO, DT_EVENTO CD_CLIENTE,TIPO_CLIENTE,NM_RAZAO_SOCIAL,CD_GRUPO_ECONOMICO,CD_TIPO_DOCUMENTO,TIPO_AGENCIA," + 
-                                "FLG_BV,FLG_COMISSAO,FLG_ATND_MIDIA,DT_INSERT,DT_UPDATE,DS_SUBTIPO_CLIENTE,CD_DDD,NM_BAIRRO," +
-                                "NM_CIDADE,SG_ESTADO,NM_PAIS,CD_CEP FROM BI_STG.STG_CRM_CLIENTE";
-                using (OracleDataAdapter adapter = new OracleDataAdapter(query, connection))
+                connection.Open();                                
+                using (OracleDataAdapter adapter = new OracleDataAdapter(_dmlSelect, connection))
                 {
                     adapter.Fill(table);
                 };
                 connection.Close();
+            }                
+            // Getting datatable layout from database
+            //table = GetDataTableLayout("clog_crm_categoria_abrasce");
+            IList<SibelClienteOracle> _sibelClientes = new List<SibelClienteOracle>();
+            if (table != null && table.Rows.Count > 0)
+            {                                
+                for(int i = 0; i < table.Rows.Count; i++)
+                {
+                    var row = table.Rows[i];
+                    _sibelClientes.Add(
+                        new SibelClienteOracle(
+                            (string)row["cd_cliente"].ToString(),
+                            (string)row["tipo_cliente"].ToString(),
+                            (string)row["nm_razao_social"].ToString(),
+                            (string)row["cd_grupo_economico"].ToString(),
+                            (string)row["cd_tipo_documento"].ToString(),
+                            (string)row["tipo_agencia"].ToString(), 
+                            (string)row["flg_bv"].ToString(),
+                            (string)row["flg_comissao"].ToString(),
+                            (string)row["flg_atnd_midia"].ToString(),
+                            (string)row["dt_insert"].ToString(),
+                            (string)row["dt_update"].ToString(),
+                            (string)row["ds_subtipo_cliente"].ToString(),
+                            (string)row["cd_ddd"].ToString(),
+                            (string)row["nm_bairro"].ToString(),
+                            (string)row["nm_cidade"].ToString(),
+                            (string)row["sg_estado"].ToString(),
+                            (string)row["nm_pais"].ToString(),
+                            (string)row["cd_cep"].ToString()
+                        )
+                    );                    
+                }
+                BulkInsertMySQL(_sibelClientes);
             }
-            return table;
         }
 
-        public void BulkInsertMySQL(DataTable table, string tableName)
+        public void GetResult(string sql, List<SibelClienteOracle> generic)
         {
-            var connectionString = @"Server=brmallsapi.mysql.database.azure.com; Database=federationsiebel;
-            Uid=myUsername; Integrated Security=True;";
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            throw new NotImplementedException();
+        }
+
+        private void BulkInsertMySQL(IList<SibelClienteOracle> results)
+        { //TODO: Alterar o ADO pelo Dapper.
+          //TODO: Alterar para respeitar mesmo a quantidade de dados. Aqui ele está fazendo um por um.          
+            try
             {
-                connection.Open();
-
-                using (MySqlTransaction tran = connection.BeginTransaction(IsolationLevel.Serializable))
+                
+                if(results != null && results.Count > 0)
                 {
-                    using (MySqlCommand cmd = new MySqlCommand())
-                    {
-                        cmd.Connection = connection;
-                        cmd.Transaction = tran;
-                        cmd.CommandText = $"INSERT INTO clog_crm_cliente " + 
-                            "(ID, EVENTO, DT_EVENTO, CD_CLIENTE,TIPO_CLIENTE,NM_RAZAO_SOCIAL,CD_GRUPO_ECONOMICO,CD_TIPO_DOCUMENTO,TIPO_AGENCIA," + 
-                            "FLG_BV,FLG_COMISSAO,FLG_ATND_MIDIA,DT_INSERT,DT_UPDATE,DS_SUBTIPO_CLIENTE,CD_DDD,NM_BAIRRO," +
-                            "NM_CIDADE,SG_ESTADO,NM_PAIS,CD_CEP FROM BI_STG.STG_CRM_CLIENTE)" + 
-                            "VALUES (ID, EVENTO, DT_EVENTO, CD_CLIENTE,TIPO_CLIENTE,NM_RAZAO_SOCIAL,CD_GRUPO_ECONOMICO,CD_TIPO_DOCUMENTO,TIPO_AGENCIA," + 
-                            "FLG_BV,FLG_COMISSAO,FLG_ATND_MIDIA,DT_INSERT,DT_UPDATE,DS_SUBTIPO_CLIENTE,CD_DDD,NM_BAIRRO," +
-                            "NM_CIDADE,SG_ESTADO,NM_PAIS,CD_CEP FROM BI_STG.STG_CRM_CLIENTE)" +
-                            "FROM BI_STG.STG_CRM_CLIENTE";
+                    //Configura a Paginação
+                    int total = results.Count; //Pega o total de resultados na lista
+                    int pageSize = 1000; //Quantidade de registros que vamos processar                    
+                    int totalPages = total / pageSize; //Baseado no total e nos registros, qual o total de páginas para iterar
+                    using (MySqlConnection connection = new MySqlConnection(_connectionStringMySQL)) 
+                    {                    
+                        connection.Open();
 
-                        using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+                        //Pega a página de processamento atual e começa a iteração
+                        for(int page = 0; page <= totalPages; page++)
                         {
-                            adapter.UpdateBatchSize = 1000;
-                            using (MySqlCommandBuilder cb = new MySqlCommandBuilder(adapter))
+                            //Lista Paginada
+                            var paginatedResults = results
+                            .Skip(pageSize * (page))
+                            .Take(pageSize)
+                            .ToList(); 
+
+                            //Abre a Transação para a quantidade atual paginada
+                            using (MySqlTransaction tran = connection.BeginTransaction(IsolationLevel.Serializable))
                             {
-                                cb.SetAllValues = true;
-                                adapter.Update(table);
+                                //Executa a operação com o total de linhas desta página
+                                foreach(var linha in paginatedResults)
+                                {                                    
+                                    using (MySqlCommand cmd = new MySqlCommand())
+                                    {
+                                        cmd.Connection = connection;
+                                        cmd.Transaction = tran;
+                                        cmd.CommandText = _dmlInsert + "values " +
+                                        $"('{"Insert"}','{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}','{linha.CdCliente}', '{linha.TipoCliente}', '{linha.NmRazaoSocial}', '{linha.CdGrupoEconomico}', '{linha.CdTipoDocumento}', '{linha.TipoAgencia}', '{linha.FlgBv}', '{linha.FlgComissao}', '{linha.FlgAtndMidia}', '{linha.DtInsert}', '{linha.DtUpdate}', '{linha.DsSubtipoCliente}', '{linha.CdDdd}', '{linha.NmBairro}', '{linha.NmCidade}', '{linha.SgEstado}', '{linha.NmPais}', '{linha.CdCep}')";
+                                        //cmd.ExecuteNonQuery();
+                                    }                                
+                                }                                
                                 tran.Commit();
-                            }
-                        };
-                        connection.Close();
-                    }
-                }
+                            }                                                    
+                        } 
+                        connection.Close();                   
+                    }                                                                           
+                }                             
             }
+            catch (Exception)
+            {                
+                throw;
+            }            
         }
     }
 }

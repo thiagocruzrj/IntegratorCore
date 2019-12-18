@@ -3,14 +3,14 @@ kind: CronJob
 metadata:
   name: ms-loader-sibel-crondeployment
 spec:
-  schedule: "*/1 * * * *"
+  schedule: "*/5 * * * *"
   jobTemplate:
     spec:
       template:
         spec:
           containers:
            - name: ms-loader-sibel-container
-             image: brmallsk8s.azurecr.io/msintegracao/brmalls-ms-loader-sibel:v1
+             image: brmallsk8s.azurecr.io/msintegracao/bioracletomysql-siebel:v1
              imagePullPolicy: Always
           imagePullSecrets:
            - name: livrodeouro

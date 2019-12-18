@@ -1,112 +1,125 @@
-using System;
 using System.Collections.Generic;
 using System.Data;
-using IntegratorCore.Domain.Repository;
-using IntegratorNet.Domain.Entities;
-using Microsoft.Extensions.Configuration;
+using IntegratorCore.Cmd.Domain.Repository;
+using IntegratorCore.Cmd.Domain.Entities;
 using MySql.Data.MySqlClient;
 using Oracle.ManagedDataAccess.Client;
+using System;
+using System.Linq;
 
-namespace IntegratorNet.Infrastructure.Repository
+namespace IntegratorCore.Cmd.Infrastructure.Repository
 {
-    public class SibelGrpEconomicoImpl : IGenerateData<SibelGrpEconomico>
+    public class SibelGrpEconomicoImpl : IGenerateData<SibelGrpEconomicoOracle>
     {
-        IConfiguration _configuration;
-
-        public SibelGrpEconomicoImpl(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
-        public void GetResult(string sql, List<SibelGrpEconomico> generic)
-        {
-            DataTable table = new DataTable();
-            // Getting datatable layout from database
-            table = GetDataTableLayout("clog_crm_grp_economico");
-
-            // Pupulate datatable
-            foreach (SibelGrpEconomico link in generic)
-            {
-                DataRow row = table.NewRow();
-                row["ID"] = link.Id;
-                row["EVENTO"] = link.Evento;
-                row["DT_EVENTO"] = link.DtEvento;                
-                row["CD_GRP_ECONOMICO"] = link.CdGrpEconomico;
-                row["NM_GRP_ECONOMICO"] = link.NmGrpEconimico;
-                row["RAZAO_SOCIAL"] = link.RazaoSocial;
-                row["TIPO_DOCUMENTO"] = link.TipoDocumento;
-                row["NUM_DOCUMENTO"] = link.NumDocumento;
-                row["NM_WEBSITE"] = link.NmWebsite;
-                row["CD_ATUACAO_MARCA"] = link.CdAtuacaoMarca;
-                row["ATENDIMENTO_LOJA"] = link.AtendimentoLoja;
-                row["ATENDIMENTO_MALL"] = link.AtendimentoMall;
-                row["ATENDIMENTO_MIDIA"] = link.AtendimentoMidia;
-                row["KA_RESP_LOJA"] = link.KaRespLoja;
-                row["KA_RESP_MALL_MIDIA"] = link.KaRespMallMidia;
-                row["DT_INSERT"] = link.DtInsert;
-                row["DT_UPDATE"] = link.DtUpdate;
-                table.Rows.Add(row);
-            }
-            BulkInsertMySQL(table, "clog_crm_grp_economico");
-        }
-
-        public DataTable GetDataTableLayout(string tableName)
-        {
-            DataTable table = new DataTable();
-            var connectionString = @"jdbc:oracle:thin:bi_read/bi#brmalls#26@192.168.100.170:1521/BRMBIPRD";
-
-            using (OracleConnection connection = new OracleConnection(connectionString))
-            {
-                connection.Open();
-                string query = $"SELECT ID, EVENTO, DT_EVENTO, CD_GRP_ECONOMICO,NM_GRP_ECONOMICO,RAZAO_SOCIAL,TIPO_DOCUMENTO,NUM_DOCUMENTO,NM_WEBSITE," +
+        private readonly string _connectionStringMySQL = @"Server=brmallsapi.mysql.database.azure.com; Database=federationsiebel;Uid=developer@brmallsapi;Password=integration$$22@!;";      
+        private readonly string _connectionStringOracle = @"Data Source=localhost:1521/BRMBIPRD;User Id =bi_read;Password=bi#brmalls#26;";     
+        private readonly string _dmlSelect = @"SELECT CD_GRP_ECONOMICO,NM_GRP_ECONOMICO,RAZAO_SOCIAL,TIPO_DOCUMENTO,NUM_DOCUMENTO,NM_WEBSITE," +
                                 "CD_ATUACAO_MARCA,ATENDIMENTO_LOJA,ATENDIMENTO_MALL,ATENDIMENTO_MIDIA,KA_RESP_LOJA, " +
                                 "KA_RESP_MALL_MIDIA,DT_INSERT,DT_UPDATE from BI_STG.STG_CRM_GRP_ECONOMICO";
-                using (OracleDataAdapter adapter = new OracleDataAdapter(query, connection))
+        private readonly string _dmlInsert = $"INSERT INTO clog_crm_grp_economico " + 
+                            "(EVENTO, DT_EVENTO,CD_GRP_ECONOMICO,NM_GRP_ECONOMICO,RAZAO_SOCIAL,TIPO_DOCUMENTO,NUM_DOCUMENTO,NM_WEBSITE," +
+                            "CD_ATUACAO_MARCA,ATENDIMENTO_LOJA,ATENDIMENTO_MALL,ATENDIMENTO_MIDIA,KA_RESP_LOJA,KA_RESP_MALL_MIDIA,DT_INSERT,DT_UPDATE from BI_STG.STG_CRM_GRP_ECONOMICO) VALUES";
+        
+        public void GetResult()
+        {
+            //TODO: Alterar ADO pelo Dapper hidratando uma Entidade
+            DataTable table = new DataTable();
+            using (OracleConnection connection = new OracleConnection(_connectionStringOracle))
+            {
+                connection.Open();                                
+                using (OracleDataAdapter adapter = new OracleDataAdapter(_dmlSelect, connection))
                 {
                     adapter.Fill(table);
                 };
                 connection.Close();
+            }                
+            // Getting datatable layout from database
+            IList<SibelGrpEconomicoOracle> _sibelGrpEconomico = new List<SibelGrpEconomicoOracle>();
+            if (table != null && table.Rows.Count > 0)
+            {                                
+                for(int i = 0; i < table.Rows.Count; i++)
+                {
+                    var row = table.Rows[i];
+                    _sibelGrpEconomico.Add(
+                        new SibelGrpEconomicoOracle(
+                            (string)row["CD_GRP_ECONOMICO"].ToString(),
+                            (string)row["NM_GRP_ECONOMICO"].ToString(),
+                            (string)row["RAZAO_SOCIAL"].ToString(),
+                            (string)row["TIPO_DOCUMENTO"].ToString(),
+                            (string)row["NUM_DOCUMENTO"].ToString(),
+                            (string)row["NM_WEBSITE"].ToString(),
+                            (string)row["CD_ATUACAO_MARCA"].ToString(),
+                            (string)row["ATENDIMENTO_LOJA"].ToString(),
+                            (string)row["ATENDIMENTO_MALL"].ToString(),
+                            (string)row["ATENDIMENTO_MIDIA"].ToString(),
+                            (string)row["KA_RESP_LOJA"].ToString(),
+                            (string)row["KA_RESP_MALL_MIDIA"].ToString(),
+                            (string)row["DT_INSERT"].ToString(),
+                            (string)row["DT_UPDATE"].ToString()
+
+                        )
+                    );                    
+                }
+                BulkInsertMySQL(_sibelGrpEconomico);
             }
-            return table;
         }
 
-        public void BulkInsertMySQL(DataTable table, string tableName)
+        public void GetResult(string sql, List<SibelGrpEconomicoOracle> generic)
         {
-            var connectionString = @"Server=brmallsapi.mysql.database.azure.com; Database=federationsiebel;
-            Uid=myUsername; Integrated Security=True;";
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            throw new NotImplementedException();
+        }
+
+        private void BulkInsertMySQL(IList<SibelGrpEconomicoOracle> results)
+        { //TODO: Alterar o ADO pelo Dapper.
+          //TODO: Alterar para respeitar mesmo a quantidade de dados. Aqui ele está fazendo um por um.          
+            try
             {
-                connection.Open();
-
-                using (MySqlTransaction tran = connection.BeginTransaction(IsolationLevel.Serializable))
+                
+                if(results != null && results.Count > 0)
                 {
-                    using (MySqlCommand cmd = new MySqlCommand())
-                    {
-                        cmd.Connection = connection;
-                        cmd.Transaction = tran;
-                        cmd.CommandText = $"INSERT INTO clog_crm_grp_economico " + 
-                            "(ID, EVENTO, DT_EVENTO, CD_GRP_ECONOMICO,NM_GRP_ECONOMICO,RAZAO_SOCIAL,TIPO_DOCUMENTO,NUM_DOCUMENTO,NM_WEBSITE," +
-                            "CD_ATUACAO_MARCA,ATENDIMENTO_LOJA,ATENDIMENTO_MALL,ATENDIMENTO_MIDIA,KA_RESP_LOJA, " +
-                            "KA_RESP_MALL_MIDIA,DT_INSERT,DT_UPDATE from BI_STG.STG_CRM_GRP_ECONOMICO)" + 
-                            "VALUES (ID, EVENTO, DT_EVENTO, CD_GRP_ECONOMICO,NM_GRP_ECONOMICO,RAZAO_SOCIAL,TIPO_DOCUMENTO,NUM_DOCUMENTO,NM_WEBSITE," +
-                            "CD_ATUACAO_MARCA,ATENDIMENTO_LOJA,ATENDIMENTO_MALL,ATENDIMENTO_MIDIA,KA_RESP_LOJA, " +
-                            "KA_RESP_MALL_MIDIA,DT_INSERT,DT_UPDATE from BI_STG.STG_CRM_GRP_ECONOMICO" +
-                            "FROM BI_STG.STG_CRM_CLIENTE";
+                    //Configura a Paginação
+                    int total = results.Count; //Pega o total de resultados na lista
+                    int pageSize = 1000; //Quantidade de registros que vamos processar                    
+                    int totalPages = total / pageSize; //Baseado no total e nos registros, qual o total de páginas para iterar
+                    using (MySqlConnection connection = new MySqlConnection(_connectionStringMySQL)) 
+                    {                    
+                        connection.Open();
 
-                        using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+                        //Pega a página de processamento atual e começa a iteração
+                        for(int page = 0; page <= totalPages; page++)
                         {
-                            adapter.UpdateBatchSize = 1000;
-                            using (MySqlCommandBuilder cb = new MySqlCommandBuilder(adapter))
+                            //Lista Paginada
+                            var paginatedResults = results
+                            .Skip(pageSize * (page))
+                            .Take(pageSize)
+                            .ToList(); 
+
+                            //Abre a Transação para a quantidade atual paginada
+                            using (MySqlTransaction tran = connection.BeginTransaction(IsolationLevel.Serializable))
                             {
-                                cb.SetAllValues = true;
-                                adapter.Update(table);
+                                //Executa a operação com o total de linhas desta página
+                                foreach(var linha in paginatedResults)
+                                {                                    
+                                    using (MySqlCommand cmd = new MySqlCommand())
+                                    {
+                                        cmd.Connection = connection;
+                                        cmd.Transaction = tran;
+                                        cmd.CommandText = _dmlInsert + "values " +
+                                        $" ('{"Insert"}','{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}','{linha.CdGrpEconomico}','{linha.NmGrpEconimico}','{linha.RazaoSocial}','{linha.TipoDocumento}','{linha.NumDocumento}','{linha.NmWebsite}','{linha.CdAtuacaoMarca}','{linha.AtendimentoLoja}','{linha.AtendimentoMall}','{linha.AtendimentoMidia}','{linha.KaRespLoja}','{linha.KaRespMallMidia}','{linha.DtInsert}','{linha.DtUpdate}')";
+                                        cmd.ExecuteNonQuery();
+                                    }                                
+                                }                                
                                 tran.Commit();
-                            }
-                        };
-                        connection.Close();
-                    }
-                }
+                            }                                                    
+                        } 
+                        connection.Close();                   
+                    }                                                                           
+                }                             
             }
+            catch (Exception)
+            {                
+                throw;
+            }            
         }
     }
 }

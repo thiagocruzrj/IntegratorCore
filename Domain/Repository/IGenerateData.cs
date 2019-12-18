@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace IntegratorCore.Domain.Repository
+namespace IntegratorCore.Cmd.Domain.Repository
 {
     public interface IGenerateData<T>
     {
-        void GetResult(string sql, List<T> generic);
+        void GetResult();
     }
 }
