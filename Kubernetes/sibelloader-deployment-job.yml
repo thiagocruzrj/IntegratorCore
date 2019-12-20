@@ -1,7 +1,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: ms-loader-sibel-crondeployment
+  name: 
 spec:
   schedule: "*/5 * * * *"
   jobTemplate:
@@ -10,7 +10,7 @@ spec:
         spec:
           containers:
            - name: ms-loader-sibel-container
-             image: brmallsk8s.azurecr.io/msintegracao/bioracletomysql-siebel:v1
+             image: 
              imagePullPolicy: Always
           imagePullSecrets:
            - name: livrodeouro
