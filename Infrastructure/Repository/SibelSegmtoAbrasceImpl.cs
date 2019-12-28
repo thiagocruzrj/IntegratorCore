@@ -13,8 +13,8 @@ namespace IntegratorCore.Cmd.Infrastructure.Repository
 {
     public class SibelSegmtoAbrasceImpl : IGenerateData<SibelSegmtoAbrasceOracle>
     {
-        private readonly string _connectionStringMySQL = @"Server=brmallsapi.mysql.database.azure.com; Database=federationsiebel;Uid=developer@brmallsapi;Password=integration$$22@!;";        
-        private readonly string _connectionStringOracle = @"Data Source=localhost:1521/BRMBIPRD;User Id =bi_read;Password=bi#brmalls#26;";       
+        private readonly string _connectionStringMySQL = @"";        
+        private readonly string _connectionStringOracle = @"";       
         private readonly string _dmlSelect = @"SELECT Cd_Segmto_Abrasce, Nm_Segmto_Abrasce from BI_STG.STG_CRM_SEGMTO_ABRASCE";
         private readonly string _dmlInsert = @"INSERT INTO clog_crm_segmto_abrasce (EVENTO, DT_EVENTO,Cd_Segmto_Abrasce, Nm_Segmto_Abrasce)" ;
 

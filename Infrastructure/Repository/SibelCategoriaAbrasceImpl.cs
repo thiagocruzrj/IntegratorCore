@@ -11,8 +11,8 @@ namespace IntegratorCore.Cmd.Infrastructure.Repository
 {
     public class SibelCategoriaAbrasceImpl : IGenerateData<SibelCategoriaAbrasceOracle>
     {
-        private readonly string _connectionStringMySQL = @"Server=brmallsapi.mysql.database.azure.com;Database=federationsiebel;Uid=developer@brmallsapi;Password=integration$$22@!;";        
-        private readonly string _connectionStringOracle = @"Data Source=localhost:1521/BRMBIPRD;User Id =bi_read;Password=bi#brmalls#26;";                                    
+        private readonly string _connectionStringMySQL = @"";        
+        private readonly string _connectionStringOracle = @"";                                    
         private readonly string _dmlSelect = @"select cd_categoria_abrasce, nm_categoria_abrasce from BI_STG.STG_CRM_CATEGORIA_ABRASCE ";
         private readonly string _dmlInsert = @"INSERT INTO clog_crm_categoria_abrasce(EVENTO, DT_EVENTO, cd_categoria_abrasce, nm_categoria_abrasce)";
         public void GetResult()

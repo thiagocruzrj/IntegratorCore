@@ -13,5 +13,5 @@ spec:
              image: 
              imagePullPolicy: Always
           imagePullSecrets:
-           - name: livrodeouro
+           - name: 
           restartPolicy: OnFailure

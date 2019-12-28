@@ -11,8 +11,8 @@ namespace IntegratorCore.Cmd.Infrastructure.Repository
 {
     public class SibelGrpEconomicoImpl : IGenerateData<SibelGrpEconomicoOracle>
     {
-        private readonly string _connectionStringMySQL = @"Server=brmallsapi.mysql.database.azure.com; Database=federationsiebel;Uid=developer@brmallsapi;Password=integration$$22@!;";      
-        private readonly string _connectionStringOracle = @"Data Source=localhost:1521/BRMBIPRD;User Id =bi_read;Password=bi#brmalls#26;";     
+        private readonly string _connectionStringMySQL = @"";      
+        private readonly string _connectionStringOracle = @"";     
         private readonly string _dmlSelect = @"SELECT CD_GRP_ECONOMICO,NM_GRP_ECONOMICO,RAZAO_SOCIAL,TIPO_DOCUMENTO,NUM_DOCUMENTO,NM_WEBSITE," +
                                 "CD_ATUACAO_MARCA,ATENDIMENTO_LOJA,ATENDIMENTO_MALL,ATENDIMENTO_MIDIA,KA_RESP_LOJA, " +
                                 "KA_RESP_MALL_MIDIA,DT_INSERT,DT_UPDATE from BI_STG.STG_CRM_GRP_ECONOMICO";

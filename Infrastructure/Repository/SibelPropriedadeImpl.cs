@@ -11,8 +11,8 @@ namespace IntegratorCore.Cmd.Infrastructure.Repository
 {
     public class SibelPropriedadeImpl : IGenerateData<SibelPropriedadeOracle>
     {
-        private readonly string _connectionStringMySQL = @"Server=brmallsapi.mysql.database.azure.com; Database=federationsiebel;Uid=developer@brmallsapi;Password=integration$$22@!;";         
-        private readonly string _connectionStringOracle = @"Data Source=localhost:1521/BRMBIPRD;User Id =bi_read;Password=bi#brmalls#26;";    
+        private readonly string _connectionStringMySQL = @"";         
+        private readonly string _connectionStringOracle = @"";    
         private readonly string _dmlSelect = @"SELECT CD_PROPRIEDADE_SIEBEL,TIPO_PROPRIEDADE,ORGID_CPI_ASSOCIADA,IND_STATUS, " +
                                 "IND_SITUACAO,IND_DISPONIB_LOCACAO,CATEGORIA_PROPRIEDADE,IND_ALERTA,CLASSIFICACAO_ABC,ABL, " +
                                 "VL_CRD,TIPO_MATERIAL,TIPO_ESTRUTURA,PERIODO_VENDA,TIPO_VENDA,QTD_COMERCIALIZADA,DT_ULT_UPD_VALORES, " +

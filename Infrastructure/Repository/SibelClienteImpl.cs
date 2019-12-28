@@ -11,8 +11,8 @@ namespace IntegratorNet.Infrastructure.Repository
 {
     public class SibelClienteImpl : IGenerateData<SibelClienteOracle>
     {
-        private readonly string _connectionStringMySQL = @"Server=brmallsapi.mysql.database.azure.com; Database=federationsiebel;Uid=developer@brmallsapi;Password=integration$$22@!;";
-        private readonly string _connectionStringOracle = @"Data Source=localhost:1521/BRMBIPRD;User Id =bi_read;Password=bi#brmalls#26;";
+        private readonly string _connectionStringMySQL = @"";
+        private readonly string _connectionStringOracle = @"";
         
         private readonly string _dmlSelect = @"SELECT CD_CLIENTE,TIPO_CLIENTE,NM_RAZAO_SOCIAL,CD_GRUPO_ECONOMICO,CD_TIPO_DOCUMENTO,TIPO_AGENCIA,FLG_BV,FLG_COMISSAO,FLG_ATND_MIDIA,DT_INSERT,DT_UPDATE,DS_SUBTIPO_CLIENTE,CD_DDD,NM_BAIRRO,NM_CIDADE,SG_ESTADO,NM_PAIS,CD_CEP FROM BI_STG.STG_CRM_CLIENTE";
         private readonly string _dmlInsert = @"INSERT INTO clog_crm_cliente(EVENTO, DT_EVENTO,CD_CLIENTE,TIPO_CLIENTE,NM_RAZAO_SOCIAL,CD_GRUPO_ECONOMICO,CD_TIPO_DOCUMENTO,TIPO_AGENCIA,FLG_BV,FLG_COMISSAO,FLG_ATND_MIDIA,DT_INSERT,DT_UPDATE,DS_SUBTIPO_CLIENTE,CD_DDD,NM_BAIRRO,NM_CIDADE,SG_ESTADO,NM_PAIS,CD_CEP)";

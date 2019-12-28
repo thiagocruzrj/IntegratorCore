@@ -11,8 +11,8 @@ namespace IntegratorCore.Cmd.Infrastructure.Repository
 {
     public class SibelNegociacaoImpl : IGenerateData<SibelNegociacaoOracle>
     {
-        private readonly string _connectionStringMySQL = @"Server=brmallsapi.mysql.database.azure.com; Database=federationsiebel;Uid=developer@brmallsapi;Password=integration$$22@!;";     
-        private readonly string _connectionStringOracle = @"Data Source=localhost:1521/BRMBIPRD;User Id =bi_read;Password=bi#brmalls#26;";      
+        private readonly string _connectionStringMySQL = @"";     
+        private readonly string _connectionStringOracle = @"";      
         private readonly string _dmlSelect = @"SELECT CD_NEGOCIACAO ,CD_NEGOCIACAO_PN ,CD_NEGOCIACAO_ASSOC, " +
                             "FL_NEGOCIACAO_CERTIFICADA,CD_MARCA,CD_CLIENTE,CD_SHOPPING,TIPO_OPORTUNIDADE,ESTAGIO,RECEITA_TOTAL, " +
                             "DT_EMISSAO,TIPO_PAGAMENTO,ALUGUEL_TOTAL,ENERGIA_TOTAL,WISHLIST,STATUS_FATURAMENTO,VL_DESCONTO,DT_INI_VIGENCIA, " +
