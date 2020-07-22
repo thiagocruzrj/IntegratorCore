@@ -13,6 +13,7 @@ namespace Consumer
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
+
                 channel.QueueDeclare(queue: "testQueue",
                                      durable: false,
                                      exclusive: false,
@@ -22,16 +23,25 @@ namespace Consumer
                 var consumer = new EventingBasicConsumer(channel);
                 consumer.Received += (model, ea) =>
                 {
-                    var body = ea.Body.ToArray();
-                    var message = Encoding.UTF8.GetString(body);
-                    Console.WriteLine();
+                    try
+                    {
+                        var body = ea.Body.ToArray();
+                        var message = Encoding.UTF8.GetString(body);
+                        Console.WriteLine("[x] Received {0}", message);
+
+                        channel.BasicAck(ea.DeliveryTag, false);
+                    }
+                    catch (Exception ex)
+                    {
+                        channel.BasicNack(ea.DeliveryTag, false, false);
+                    }
                 };
                 channel.BasicConsume(queue: "testQueue",
                                      autoAck: true,
                                      consumer: consumer);
 
-            Console.WriteLine("Press [enter] to exit.");
-            Console.WriteLine();
+                Console.WriteLine("Press [enter] to exit.");
+                Console.WriteLine();
             }
         }
     }
