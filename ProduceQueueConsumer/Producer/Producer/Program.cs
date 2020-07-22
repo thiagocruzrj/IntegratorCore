@@ -22,7 +22,7 @@ namespace Producer
                 var body = Encoding.UTF8.GetBytes(message);
 
                 channel.BasicPublish(exchange: "",
-                                     routingKey: "hi",
+                                     routingKey: "testQueue",
                                      basicProperties: null,
                                      body: body);
                 Console.WriteLine(" [x] Send {0}", message);
