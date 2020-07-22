@@ -1,4 +1,4 @@
-﻿using System;
+﻿using RabbitMQ.Client;
 
 namespace Producer
 {
@@ -6,7 +6,16 @@ namespace Producer
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var factory = new ConnectionFactory() { HostName = "localhost" };
+            using var connection = factory.CreateConnection();
+            using (var channel = connection.CreateModel())
+            {
+                channel.QueueDeclare(queue: "testQueue",
+                                     durable: false,
+                                     exclusive: false,
+                                     autoDelete: false,
+                                     arguments: null);
+            }
         }
     }
 }
