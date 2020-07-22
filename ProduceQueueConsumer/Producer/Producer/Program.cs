@@ -28,7 +28,7 @@ namespace Producer
                 Console.WriteLine(" [x] Send {0}", message);
             }
 
-            Console.WriteLine("Press Enter to exit.");
+            Console.WriteLine("Press [enter] to exit.");
             Console.WriteLine();
         }
     }
