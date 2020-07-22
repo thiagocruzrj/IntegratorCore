@@ -1,4 +1,5 @@
 ﻿using RabbitMQ.Client;
+using System.Text;
 
 namespace Producer
 {
@@ -15,6 +16,9 @@ namespace Producer
                                      exclusive: false,
                                      autoDelete: false,
                                      arguments: null);
+
+                string message = "Hello world";
+                var body = Encoding.UTF8.GetBytes(message);
             }
         }
     }
