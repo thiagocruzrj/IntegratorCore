@@ -23,18 +23,9 @@ namespace Consumer
                 var consumer = new EventingBasicConsumer(channel);
                 consumer.Received += (model, ea) =>
                 {
-                    try
-                    {
-                        var body = ea.Body.ToArray();
-                        var message = Encoding.UTF8.GetString(body);
-                        Console.WriteLine("[x] Received {0}", message);
-
-                        channel.BasicAck(ea.DeliveryTag, false);
-                    }
-                    catch (Exception ex)
-                    {
-                        channel.BasicNack(ea.DeliveryTag, false, false);
-                    }
+                    var body = ea.Body.ToArray();
+                    var message = Encoding.UTF8.GetString(body);
+                    Console.WriteLine("[x] Received {0}", message);
                 };
                 channel.BasicConsume(queue: "testQueue",
                                      autoAck: true,

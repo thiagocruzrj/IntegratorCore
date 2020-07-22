@@ -18,18 +18,21 @@ namespace Producer
                                      autoDelete: false,
                                      arguments: null);
 
-                string message = "Hello world";
-                var body = Encoding.UTF8.GetBytes(message);
+                int count = 0;
+                while (true)
+                {
 
-                channel.BasicPublish(exchange: "",
-                                     routingKey: "testQueue",
-                                     basicProperties: null,
-                                     body: body);
-                Console.WriteLine(" [x] Send {0}", message);
+                    string message = $"{count++} Hello world";
+                    var body = Encoding.UTF8.GetBytes(message);
+
+                    channel.BasicPublish(exchange: "",
+                                         routingKey: "testQueue",
+                                         basicProperties: null,
+                                         body: body);
+                    Console.WriteLine(" [x] Send {0}", message);
+                    System.Threading.Thread.Sleep(200);
+                }
             }
-
-            Console.WriteLine("Press [enter] to exit.");
-            Console.WriteLine();
         }
     }
 }
