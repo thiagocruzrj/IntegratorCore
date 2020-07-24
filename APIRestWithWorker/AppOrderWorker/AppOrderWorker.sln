@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30204.135
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppOrderWorker", "AppOrderWorker\AppOrderWorker.csproj", "{56CF8061-6C38-4D09-96B8-B220D3C9E804}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{56CF8061-6C38-4D09-96B8-B220D3C9E804}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56CF8061-6C38-4D09-96B8-B220D3C9E804}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56CF8061-6C38-4D09-96B8-B220D3C9E804}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56CF8061-6C38-4D09-96B8-B220D3C9E804}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DB020644-CB40-4F60-B416-B8CB662FF107}
+	EndGlobalSection
+EndGlobal
